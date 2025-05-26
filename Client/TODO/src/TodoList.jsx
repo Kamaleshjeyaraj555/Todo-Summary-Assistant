@@ -187,17 +187,16 @@ const TodoList = () => {
                 headers: { 'Content-Type': 'application/json' }
             });
             let data;
-            let text;
-            try {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
-            } catch (jsonErr) {
-               
-                text = await response.text();
+            } else {
+                data = await response.text();
             }
             if (response.ok) {
                 setSlackStatus('Summary sent to Slack!');
             } else {
-                setSlackStatus('Error: ' + (data?.message || text || JSON.stringify(data) || 'Unknown error'));
+                setSlackStatus('Error: ' + (data?.message || data || 'Unknown error'));
             }
         } catch (err) {
             setSlackStatus('Error: ' + (err?.message || err?.toString() || 'Unknown error'));
